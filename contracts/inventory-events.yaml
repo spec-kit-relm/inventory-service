@@ -1,11 +1,11 @@
 asyncapi: 3.0.0
 info:
   title: Relm Inventory Events
-  version: 1.1.0
+  version: 1.1.1
   description: |
     Events published by inventory-service through its transactional outbox (BE-4).
     Delivery is at-least-once; consumers de-duplicate by `eventId` and tolerate out-of-order delivery.
-    1.1.0 adds reservation events (RELM-1).
+    1.1.0 adds reservation events (RELM-2). 1.1.1: documentation only — references renumbered from RELM-1.
   contact:
     name: Relm backend team
     url: https://github.com/spec-kit-relm/inventory-service
@@ -24,14 +24,14 @@ operations:
     action: send
     channel:
       $ref: '#/channels/reservations'
-    summary: Published when an active reservation expires and its units are released (RELM-1/US3/AS1).
+    summary: Published when an active reservation expires and its units are released (RELM-2/US3/AS1).
     messages:
       - $ref: '#/channels/reservations/messages/reservationExpired'
   publishReservationCommitted:
     action: send
     channel:
       $ref: '#/channels/reservations'
-    summary: Published when a reservation is committed by an order (RELM-1/US2/AS1).
+    summary: Published when a reservation is committed by an order (RELM-2/US2/AS1).
     messages:
       - $ref: '#/channels/reservations/messages/reservationCommitted'
 components:

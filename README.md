@@ -10,8 +10,8 @@ Owner: `@spec-kit-relm/backend` · Spec Kit project, kind **backend** (presets `
 
 | Contract | Version | Consumers | Notes |
 |----------|---------|-----------|-------|
-| [`contracts/inventory-api.yaml`](contracts/inventory-api.yaml) | 1.1.0 | orders-service, web-storefront, e2e-tests | 1.1.0 adds reservations (RELM-1) |
-| [`contracts/inventory-events.yaml`](contracts/inventory-events.yaml) | 1.1.0 | — | reservation expired/committed events |
+| [`contracts/inventory-api.yaml`](contracts/inventory-api.yaml) | 1.1.1 | orders-service, web-storefront, e2e-tests | 1.1.0 adds reservations (RELM-2) |
+| [`contracts/inventory-events.yaml`](contracts/inventory-events.yaml) | 1.1.1 | — | reservation expired/committed events |
 
 ## Run it
 
@@ -21,7 +21,7 @@ go run ./cmd/inventory            # :8081
 curl localhost:8081/v1/items/SKU-RED-MUG/availability
 ```
 
-Today's code implements inventory-api **1.0.0** (availability). RELM-1 (below) adds the
+Today's code implements inventory-api **1.0.0** (availability). RELM-2 (below) adds the
 reservation endpoints — the tasks are ready and implementation has not started yet.
 
 ## How we work in this repository — in order
@@ -47,7 +47,7 @@ Bugfixes and chores skip steps 2–5 — see the
 
 | Feature | Directory | Role | State |
 |---------|-----------|------|-------|
-| RELM-1 Stock reservation at checkout | [`specs/001-stock-reservation/`](specs/001-stock-reservation/) | provider (first in rollout) | spec Approved · contracts locked · [tasks](specs/001-stock-reservation/tasks.md) ready — **next: `/speckit.implement Phase 1`** |
+| RELM-2 Stock reservation at checkout | [`specs/002-stock-reservation/`](specs/002-stock-reservation/) | provider (first in rollout) | spec Approved · contracts locked · [tasks](specs/002-stock-reservation/tasks.md) ready — **next: `/speckit.implement Phase 1`** |
 
 ## Gates on every PR
 
