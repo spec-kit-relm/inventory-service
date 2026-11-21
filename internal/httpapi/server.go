@@ -20,7 +20,7 @@ type Problem struct {
 
 const problemBase = "https://errors.relm.example/inventory/"
 
-// NewServer wires the routes of inventory-api 1.0.0. RELM-1 adds the reservation routes.
+// NewServer wires the routes of inventory-api 1.0.0. RELM-2 adds the reservation routes.
 func NewServer(stock *domain.Stock, log *slog.Logger) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {

@@ -1,12 +1,12 @@
 # Feature Specification: Stock reservation at checkout — inventory slice
 
-**Feature Branch**: `001-stock-reservation`
+**Feature Branch**: `002-stock-reservation`
 
 **Created**: 2026-11-18
 
 **Status**: Approved
 
-**Input**: User description: "RELM-1 stock-reservation: inventory-service slice from the handoff brief — hold all cart lines at checkout start for a fixed time (all-or-nothing), expose the hold's state and remaining time, convert a hold into a permanent deduction when an order is placed, and release unused holds within 60 seconds of expiry."
+**Input**: User description: "RELM-2 stock-reservation: inventory-service slice from the handoff brief — hold all cart lines at checkout start for a fixed time (all-or-nothing), expose the hold's state and remaining time, convert a hold into a permanent deduction when an order is placed, and release unused holds within 60 seconds of expiry."
 
 ## Clarifications
 
@@ -24,17 +24,17 @@
 The storefront asks inventory to hold a cart's lines; inventory holds all of them or none and
 reports what is short.
 
-**Why this priority**: Core of RELM-1 (central US1); every other repository depends on it.
+**Why this priority**: Core of RELM-2 (central US1); every other repository depends on it.
 
 **Independent Test**: Create a hold for an in-stock cart, verify availability for other carts drops
 accordingly; create a hold for a short cart, verify nothing is held and shortages are reported.
 
 **Acceptance Scenarios**:
 
-1. **Given** SKU A with 5 available, **When** a hold for 2 units of A is requested for cart C, **Then** the hold is active for 15 minutes and A shows 3 available. *[RELM-1/US1/AS1]*
-2. **Given** SKU A with 1 available, **When** a hold for 2 units of A is requested, **Then** nothing is held and the response lists A as short with 1 available. *[RELM-1/US1/AS2]*
-3. **Given** an active hold for cart C, **When** the hold is read again, **Then** the same hold and the correct remaining time are returned and availability is unchanged. *[RELM-1/US1/AS3]*
-4. **Given** the only unit of A is held by cart C, **When** cart D requests a hold for A, **Then** nothing is held for D and A is reported short. *[RELM-1/US1/AS4]*
+1. **Given** SKU A with 5 available, **When** a hold for 2 units of A is requested for cart C, **Then** the hold is active for 15 minutes and A shows 3 available. *[RELM-2/US1/AS1]*
+2. **Given** SKU A with 1 available, **When** a hold for 2 units of A is requested, **Then** nothing is held and the response lists A as short with 1 available. *[RELM-2/US1/AS2]*
+3. **Given** an active hold for cart C, **When** the hold is read again, **Then** the same hold and the correct remaining time are returned and availability is unchanged. *[RELM-2/US1/AS3]*
+4. **Given** the only unit of A is held by cart C, **When** cart D requests a hold for A, **Then** nothing is held for D and A is reported short. *[RELM-2/US1/AS4]*
 5. **Given** an active hold for cart C, **When** a new hold with different lines is requested for C, **Then** the previous hold is replaced and its units are released in the same operation.
 6. **Given** a hold request, **When** it is repeated with the same idempotency key, **Then** the original result is returned and no additional units are held.
 
@@ -50,9 +50,9 @@ orders-service commits the hold when an order is placed; the units become a perm
 
 **Acceptance Scenarios**:
 
-1. **Given** an active hold, **When** it is committed for order O, **Then** the held units are permanently deducted and the hold is marked committed. *[RELM-1/US2/AS1]*
+1. **Given** an active hold, **When** it is committed for order O, **Then** the held units are permanently deducted and the hold is marked committed. *[RELM-2/US2/AS1]*
 2. **Given** a hold committed for order O, **When** the commit for O is repeated, **Then** the same result is returned and nothing else changes.
-3. **Given** an expired or replaced hold, **When** a commit is attempted, **Then** it is rejected as expired and nothing is deducted. *[RELM-1/US2/AS3]*
+3. **Given** an expired or replaced hold, **When** a commit is attempted, **Then** it is rejected as expired and nothing is deducted. *[RELM-2/US2/AS3]*
 
 ---
 
@@ -66,8 +66,8 @@ Holds that are not committed within their lifetime release their units automatic
 
 **Acceptance Scenarios**:
 
-1. **Given** an active hold that is not committed, **When** its lifetime ends, **Then** its units are available again within 60 seconds and an expiry event is published. *[RELM-1/US3/AS1]*
-2. **Given** an expired hold, **When** it is read, **Then** it shows the expired state and zero remaining time. *[RELM-1/US3/AS2]*
+1. **Given** an active hold that is not committed, **When** its lifetime ends, **Then** its units are available again within 60 seconds and an expiry event is published. *[RELM-2/US3/AS1]*
+2. **Given** an expired hold, **When** it is read, **Then** it shows the expired state and zero remaining time. *[RELM-2/US3/AS2]*
 
 ---
 
@@ -109,21 +109,21 @@ Holds that are not committed within their lifetime release their units automatic
 ## Assumptions
 
 - Consumers authenticate with service tokens; per-shopper authorization stays in the storefront.
-- No Relm service consumes the reservation events in RELM-1; they are published for analytics and future features.
+- No Relm service consumes the reservation events in RELM-2; they are published for analytics and future features.
 
 ---
 
 ## Relm Traceability *(mandatory — ORG-1, PRD-1, QA-2)*
 
-**Feature ID**: RELM-1
-**Central spec**: [product-specs/specs/001-stock-reservation/spec.md](https://github.com/spec-kit-relm/product-specs/blob/main/specs/001-stock-reservation/spec.md)
+**Feature ID**: RELM-2
+**Central spec**: [product-specs/specs/002-stock-reservation/spec.md](https://github.com/spec-kit-relm/product-specs/blob/main/specs/002-stock-reservation/spec.md)
 **Repository role**: provider
-**Contracts provided**: inventory-api@1.1.0, inventory-events@1.1.0
+**Contracts provided**: inventory-api@1.1.1, inventory-events@1.1.1
 **Contracts consumed**: none
-**Product stories covered**: RELM-1 US1 (AS1–AS4), US2 (AS1, AS3), US3 (AS1, AS2)
+**Product stories covered**: RELM-2 US1 (AS1–AS4), US2 (AS1, AS3), US3 (AS1, AS2)
 
 **Status lifecycle**: Draft → In Review → Approved → Implemented → Released
 
 ### Scenario IDs
 Central scenario IDs are shown in brackets after each shared scenario. Repository-only scenarios
-(US1 AS5–AS6, US2 AS2) use local IDs `INV/RELM-1/US<k>/AS<m>` in test titles.
+(US1 AS5–AS6, US2 AS2) use local IDs `INV/RELM-2/US<k>/AS<m>` in test titles.

@@ -12,8 +12,8 @@ Rules that MUST hold are in `.specify/memory/constitution.md` (ORG-*, BE-*, INV-
 | Build | `go build ./...` |
 | Unit tests | `go test ./...` |
 | Race + coverage | `go test -race -coverprofile=cover.out ./...` |
-| Integration tests (PostgreSQL via Testcontainers) | `make integration-test` *(added by RELM-1 T002)* |
-| Provider verification | `make contract-test` *(added by RELM-1 T009)* |
+| Integration tests (PostgreSQL via Testcontainers) | `make integration-test` *(added by RELM-2 T002)* |
+| Provider verification | `make contract-test` *(added by RELM-2 T009)* |
 | Lint | `go vet ./... && golangci-lint run` |
 | Contract lint | `npx @redocly/cli@1 lint --config ../speckit-platform/contracts/redocly.yaml contracts/inventory-api.yaml` |
 | Run locally | `RESERVATION_TTL=2s go run ./cmd/inventory` (listens on `:8081`) |
@@ -25,11 +25,11 @@ Run `go vet ./... && go test ./...` before marking any task `[X]`.
 cmd/inventory/         main + wiring + config
 internal/domain/       business rules — imports nothing from adapters or net/http (INV-2)
 internal/httpapi/      HTTP adapter for inventory-api (stdlib ServeMux, problem+json)
-internal/store/        PostgreSQL adapter + migrations           (RELM-1)
-internal/events/       outbox, relay, expiry worker              (RELM-1)
+internal/store/        PostgreSQL adapter + migrations           (RELM-2)
+internal/events/       outbox, relay, expiry worker              (RELM-2)
 contracts/             AUTHORITATIVE OpenAPI + AsyncAPI files
-test/contract/         provider verification against contracts/  (RELM-1)
-test/integration/      Testcontainers tests                      (RELM-1)
+test/contract/         provider verification against contracts/  (RELM-2)
+test/integration/      Testcontainers tests                      (RELM-2)
 specs/NNN-*/           Spec Kit features (spec, plan, tasks, …)
 ```
 
@@ -40,14 +40,14 @@ specs/NNN-*/           Spec Kit features (spec, plan, tasks, …)
 - Start a cross-repo slice with `/speckit.relm.handoff RELM-<n>` (reads `../product-specs`).
 - As the provider: draft contract changes during `/speckit.plan`, then open a separate contract PR.
 - Implement one phase per `/speckit.implement` run; finish with `/speckit.converge` and `/speckit.relm.pr`.
-- Current feature: **RELM-1** `specs/001-stock-reservation/` — tasks ready, start with Phase 1.
+- Current feature: **RELM-2** `specs/002-stock-reservation/` — tasks ready, start with Phase 1.
 
 ## Conventions
 - Errors: return `domain` errors; map them to problem types only in `internal/httpapi/problems.go`.
   Problem `type` = `https://errors.relm.example/inventory/<code>`.
 - Time: inject `now func() time.Time`; never call `time.Now()` inside `internal/domain`.
 - Tests: table-driven; test names that verify a scenario start with its ID,
-  e.g. `t.Run("RELM-1/US1/AS2 short cart holds nothing", …)`.
+  e.g. `t.Run("RELM-2/US1/AS2 short cart holds nothing", …)`.
 - Logging: `slog` with `request_id`; never log request bodies.
 - SQL: lock rows in SKU order; every multi-row change in one transaction with its outbox row.
 
@@ -58,6 +58,6 @@ specs/NNN-*/           Spec Kit features (spec, plan, tasks, …)
 - Edit Parts A/B of the constitution.
 
 ## Gotchas
-- Availability = `on_hand − reserved`. Old code paths that read `on_hand` directly are bugs after RELM-1.
+- Availability = `on_hand − reserved`. Old code paths that read `on_hand` directly are bugs after RELM-2.
 - `remainingSeconds` is computed at response time; tests must allow ±1 s.
 - Create/commit treat `expires_at <= now()` as expired even if the worker has not run yet.

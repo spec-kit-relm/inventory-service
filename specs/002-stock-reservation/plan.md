@@ -1,8 +1,8 @@
 # Implementation Plan: Stock reservation at checkout — inventory slice
 
-**Branch**: `001-stock-reservation` | **Date**: 2026-11-19 | **Spec**: [spec.md](./spec.md)
+**Branch**: `002-stock-reservation` | **Date**: 2026-11-19 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Feature specification from `/specs/001-stock-reservation/spec.md`
+**Input**: Feature specification from `/specs/002-stock-reservation/spec.md`
 
 ## Summary
 
@@ -38,9 +38,9 @@ and an expiry worker that releases unused holds within 60 s and publishes
 
 | Rule | How this plan complies | Status |
 |------|------------------------|--------|
-| ORG-1 Spec before code | Feature RELM-1, local spec approved | ✅ |
+| ORG-1 Spec before code | Feature RELM-2, local spec approved | ✅ |
 | ORG-2 WHAT/WHY in spec | Local spec is technology-free; tech only here | ✅ |
-| ORG-3 Contract-first | inventory-api 1.1.0 + inventory-events 1.1.0 promoted and locked before tasks | ✅ |
+| ORG-3 Contract-first | inventory-api 1.1.1 + inventory-events 1.1.1 promoted and locked before tasks | ✅ |
 | ORG-4 Tests prove the spec | Scenario-ID tests per story; provider verification for every new operation | ✅ |
 | ORG-5 Secure by default | Service-token auth, scope `inventory:reserve`; no personal data (cartId is opaque) | ✅ |
 | ORG-6 Observable | metrics `reservation_created_total`, `reservation_release_lag_seconds`, RED per endpoint | ✅ |
@@ -60,7 +60,7 @@ and an expiry worker that releases unused holds within 60 s and publishes
 ### Documentation (this feature)
 
 ```text
-specs/001-stock-reservation/
+specs/002-stock-reservation/
 ├── plan.md              # This file
 ├── research.md          # Decisions: locking strategy, expiry worker, idempotency storage
 ├── data-model.md        # Tables, states, transitions
@@ -96,8 +96,8 @@ test/integration/              Testcontainers PostgreSQL tests
 
 | Interface | Role | Contract file | Locked version | Change | Consumers / provider |
 |-----------|------|---------------|----------------|--------|----------------------|
-| Inventory API — availability + reservations | provides | `contracts/inventory-api.yaml` | 1.1.0 | additive | orders-service, web-storefront, e2e-tests |
-| Inventory events — reservations channel | provides | `contracts/inventory-events.yaml` | 1.1.0 | additive | — (analytics) |
+| Inventory API — availability + reservations | provides | `contracts/inventory-api.yaml` | 1.1.1 | additive | orders-service, web-storefront, e2e-tests |
+| Inventory events — reservations channel | provides | `contracts/inventory-events.yaml` | 1.1.1 | additive | — (analytics) |
 
 ### Observability (ORG-6)
 

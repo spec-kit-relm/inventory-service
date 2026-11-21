@@ -1,12 +1,12 @@
 ---
-description: "Task list for RELM-1 stock reservation — inventory-service slice"
+description: "Task list for RELM-2 stock reservation — inventory-service slice"
 ---
 
 # Tasks: Stock reservation at checkout — inventory slice
 
-**Input**: Design documents from `/specs/001-stock-reservation/`
+**Input**: Design documents from `/specs/002-stock-reservation/`
 
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts (inventory-api 1.1.0, inventory-events 1.1.0 — locked)
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts (inventory-api 1.1.1, inventory-events 1.1.1 — locked)
 
 **Tests**: Mandatory at Relm (ORG-4). Test tasks precede implementation tasks in every story phase.
 
@@ -51,13 +51,13 @@ description: "Task list for RELM-1 stock reservation — inventory-service slice
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T011 [P] [US1] Domain test `RELM-1/US1/AS1 hold reduces availability` in `internal/domain/reservation_test.go`
-- [ ] T012 [P] [US1] Domain test `RELM-1/US1/AS2 short cart holds nothing and reports shortages`
-- [ ] T013 [P] [US1] Domain test `RELM-1/US1/AS4 last unit held by another cart is not available`
-- [ ] T014 [P] [US1] Domain test `INV/RELM-1/US1/AS5 new hold for same cart replaces and releases previous`
+- [ ] T011 [P] [US1] Domain test `RELM-2/US1/AS1 hold reduces availability` in `internal/domain/reservation_test.go`
+- [ ] T012 [P] [US1] Domain test `RELM-2/US1/AS2 short cart holds nothing and reports shortages`
+- [ ] T013 [P] [US1] Domain test `RELM-2/US1/AS4 last unit held by another cart is not available`
+- [ ] T014 [P] [US1] Domain test `INV/RELM-2/US1/AS5 new hold for same cart replaces and releases previous`
 - [ ] T015 [P] [US1] Property test `TestStockInvariant` — random concurrent create/replace/commit/expire never makes available < 0 (INV-3)
-- [ ] T016 [US1] Provider verification `RELM-1/US1/AS1..AS4` for `POST /v1/reservations` incl. 409 `insufficient-stock`, 422 invalid lines, replay with same `Idempotency-Key` (`INV/RELM-1/US1/AS6`) in `test/contract/reservations_test.go`
-- [ ] T017 [US1] Provider verification `RELM-1/US1/AS3` for `GET /v1/reservations/{id}` (same hold, decreasing `remainingSeconds`)
+- [ ] T016 [US1] Provider verification `RELM-2/US1/AS1..AS4` for `POST /v1/reservations` incl. 409 `insufficient-stock`, 422 invalid lines, replay with same `Idempotency-Key` (`INV/RELM-2/US1/AS6`) in `test/contract/reservations_test.go`
+- [ ] T017 [US1] Provider verification `RELM-2/US1/AS3` for `GET /v1/reservations/{id}` (same hold, decreasing `remainingSeconds`)
 
 ### Implementation for User Story 1
 
@@ -66,7 +66,7 @@ description: "Task list for RELM-1 stock reservation — inventory-service slice
 - [ ] T020 [US1] Handlers `POST /v1/reservations`, `GET /v1/reservations/{id}` in `internal/httpapi/reservations.go`; availability now excludes `reserved`
 - [ ] T021 [US1] Metrics `reservation_created_total{result}` and RED per route (ORG-6)
 
-**Checkpoint**: US1 fully functional and verified against inventory-api 1.1.0
+**Checkpoint**: US1 fully functional and verified against inventory-api 1.1.1
 
 ---
 
@@ -78,9 +78,9 @@ description: "Task list for RELM-1 stock reservation — inventory-service slice
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T022 [P] [US2] Domain test `RELM-1/US2/AS1 commit deducts on_hand and reserved`
-- [ ] T023 [P] [US2] Domain test `INV/RELM-1/US2/AS2 repeated commit for same order returns same result; other order rejected`
-- [ ] T024 [P] [US2] Domain test `RELM-1/US2/AS3 commit of expired or replaced hold is rejected` (including lazy expiry before worker ran)
+- [ ] T022 [P] [US2] Domain test `RELM-2/US2/AS1 commit deducts on_hand and reserved`
+- [ ] T023 [P] [US2] Domain test `INV/RELM-2/US2/AS2 repeated commit for same order returns same result; other order rejected`
+- [ ] T024 [P] [US2] Domain test `RELM-2/US2/AS3 commit of expired or replaced hold is rejected` (including lazy expiry before worker ran)
 - [ ] T025 [US2] Provider verification for `POST /v1/reservations/{id}/commit`: 200, replay, 409 `reservation-expired`, 404
 
 ### Implementation for User Story 2
@@ -100,8 +100,8 @@ description: "Task list for RELM-1 stock reservation — inventory-service slice
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T028 [P] [US3] Integration test `RELM-1/US3/AS1 expired hold releases units within 60 s and publishes inventory.reservation.expired` (TTL 2 s) in `test/integration/expiry_test.go`
-- [ ] T029 [P] [US3] Provider verification `RELM-1/US3/AS2 GET expired hold shows expired, remainingSeconds 0`
+- [ ] T028 [P] [US3] Integration test `RELM-2/US3/AS1 expired hold releases units within 60 s and publishes inventory.reservation.expired` (TTL 2 s) in `test/integration/expiry_test.go`
+- [ ] T029 [P] [US3] Provider verification `RELM-2/US3/AS2 GET expired hold shows expired, remainingSeconds 0`
 - [ ] T030 [P] [US3] Event schema test: published payloads validate against `contracts/inventory-events.yaml` (INV-5)
 - [ ] T031 [US3] Race test: commit vs. expiry for the same hold — exactly one wins (spec Edge Cases)
 
@@ -123,7 +123,7 @@ description: "Task list for RELM-1 stock reservation — inventory-service slice
 ## Phase R: Relm Verification & Handoff *(mandatory, always the last phase — ORG-3, ORG-4, ORG-9, PRD-6)*
 
 - [ ] TR01 Provider verification and consumer contract tests pass against the locked contract versions, including negative cases
-- [ ] TR02 Every acceptance scenario `RELM-1/US<k>/AS<m>` in scope has an automated test whose title starts with that ID
+- [ ] TR02 Every acceptance scenario `RELM-2/US<k>/AS<m>` in scope has an automated test whose title starts with that ID
 - [ ] TR03 Feature flag defaults to off; rollback steps from plan.md verified in a non-production environment
 - [ ] TR04 Run `/speckit.converge`; resolve every appended convergence task until it reports **Converged**
 - [ ] TR05 If shipped behavior or contract versions differ from the central spec, open a PR in `product-specs` updating `spec.md` / `contracts.lock.md`
