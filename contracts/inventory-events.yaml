@@ -1,0 +1,84 @@
+asyncapi: 3.0.0
+info:
+  title: Relm Inventory Events
+  version: 1.1.0
+  description: |
+    Events published by inventory-service through its transactional outbox (BE-4).
+    Delivery is at-least-once; consumers de-duplicate by `eventId` and tolerate out-of-order delivery.
+    1.1.0 adds reservation events (RELM-1).
+  contact:
+    name: Relm backend team
+    url: https://github.com/spec-kit-relm/inventory-service
+defaultContentType: application/json
+channels:
+  reservations:
+    address: inventory.reservations.v1
+    description: Reservation lifecycle events, keyed by reservationId.
+    messages:
+      reservationExpired:
+        $ref: '#/components/messages/ReservationExpired'
+      reservationCommitted:
+        $ref: '#/components/messages/ReservationCommitted'
+operations:
+  publishReservationExpired:
+    action: send
+    channel:
+      $ref: '#/channels/reservations'
+    summary: Published when an active reservation expires and its units are released (RELM-1/US3/AS1).
+    messages:
+      - $ref: '#/channels/reservations/messages/reservationExpired'
+  publishReservationCommitted:
+    action: send
+    channel:
+      $ref: '#/channels/reservations'
+    summary: Published when a reservation is committed by an order (RELM-1/US2/AS1).
+    messages:
+      - $ref: '#/channels/reservations/messages/reservationCommitted'
+components:
+  messages:
+    ReservationExpired:
+      name: inventory.reservation.expired
+      title: Reservation expired
+      payload:
+        $ref: '#/components/schemas/ReservationExpiredEvent'
+    ReservationCommitted:
+      name: inventory.reservation.committed
+      title: Reservation committed
+      payload:
+        $ref: '#/components/schemas/ReservationCommittedEvent'
+  schemas:
+    Envelope:
+      type: object
+      required: [eventId, eventType, occurredAt, schemaVersion, traceId]
+      properties:
+        eventId: { type: string, format: uuid }
+        eventType: { type: string }
+        occurredAt: { type: string, format: date-time }
+        schemaVersion: { type: string, const: "1" }
+        traceId: { type: string }
+    ReservationExpiredEvent:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [reservationId, cartId, lines, expiredAt]
+          properties:
+            reservationId: { type: string, format: uuid }
+            cartId: { type: string, format: uuid }
+            expiredAt: { type: string, format: date-time }
+            lines:
+              type: array
+              items:
+                type: object
+                required: [sku, quantity]
+                properties:
+                  sku: { type: string }
+                  quantity: { type: integer }
+    ReservationCommittedEvent:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [reservationId, orderId, committedAt]
+          properties:
+            reservationId: { type: string, format: uuid }
+            orderId: { type: string, format: uuid }
+            committedAt: { type: string, format: date-time }
